@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/files_api_mock/model"
+	"github.com/youtangai/files_api_mock/service"
 	"net/http"
 	"fmt"
 )
@@ -13,10 +14,14 @@ type IFileController interface {
 	DeleteNode(c *gin.Context)
 }
 
-type FileController struct {}
+type FileController struct {
+	Srv service.IFileService
+}
 
-func NewFileController() IFileController {
-	return FileController{}
+func NewFileController(srv service.IFileService) IFileController {
+	return FileController{
+		Srv: srv,
+	}
 }
 
 func (ctrl FileController) GetNodes(c *gin.Context) {
