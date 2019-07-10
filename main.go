@@ -24,8 +24,8 @@ func initRouter() (*gin.Engine, error) {
 	router.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusNoContent)
 	})
-	router.GET("/files/:path", fileCtrl.GetNodes)
-	router.POST("/files/:path", fileCtrl.CreateNode)
+	router.GET("/files/*path", fileCtrl.GetNodes)
+	router.POST("/files/*path", fileCtrl.CreateNode)
 	router.DELETE("/files/*path", fileCtrl.DeleteNode)
 
 	return router, nil

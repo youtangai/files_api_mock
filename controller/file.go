@@ -48,7 +48,7 @@ func (ctrl FileController) CreateNode(c *gin.Context) {
 }
 
 func (ctrl FileController) DeleteNode(c *gin.Context) {
-	path := c.Params
+	path := c.Param("path")
 	fmt.Println(path)
 	c.Status(http.StatusNoContent)
 }
