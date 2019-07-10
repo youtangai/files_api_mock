@@ -1,6 +1,6 @@
 package model
 
-type Blog struct {
+type Blob struct {
 	Kind string `json:"kind"`
 	Name string `json:"name"`
 	Data string `json:"data"`
