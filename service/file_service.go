@@ -88,7 +88,7 @@ func (srv FileService) ReadFile(path string) (model.Blob, error) {
 	defer file.Close()
 
 	// len, cap is 1MB
-	data := make([]byte, 1)
+	data := make([]byte, 1024*1024)
 	content := ""
 	for {
 		_, err := file.Read(data)
