@@ -24,17 +24,9 @@ func TestFileService_CreateDir(t *testing.T) {
 	}
 }
 
-func TestFileService_DeleteFile(t *testing.T) {
+func TestFileService_DeleteNode(t *testing.T) {
 	srv := NewFileService()
-	err := srv.DeleteFile("a.txt")
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestFileService_DeleteDir(t *testing.T) {
-	srv := NewFileService()
-	err := srv.DeleteDir("dir1")
+	err := srv.DeleteNode("a.txt")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -1,11 +1,16 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/youtangai/files_api_mock/model"
 	"github.com/youtangai/files_api_mock/service"
 	"net/http"
-	"fmt"
+)
+
+const (
+	BLOB = "blob"
+	TREE = "tree"
 )
 
 type IFileController interface {
@@ -28,32 +33,68 @@ func (ctrl FileController) GetNodes(c *gin.Context) {
 	path := c.Param("path")
 	fmt.Println(path)
 
-	items := []model.Node{
-		{
-			Kind: model.BLOB,
-			Name: "file1",
-		},
-		{
-			Kind: model.BLOB,
-			Name: "file2",
-		},
+	isDir, err := ctrl.Srv.IsDir(path)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
 	}
-	result := model.Tree{
-		Kind: model.TREE,
-		Name: "/",
-		Items: items,
+
+	if isDir {
+		tree, err := ctrl.Srv.ReadDir(path)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		c.JSON(http.StatusOK,tree)
+		return
 	}
-	c.JSON(http.StatusOK, result)
+
+	blob, err := ctrl.Srv.ReadFile(path)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+	c.JSON(http.StatusOK, blob)
 }
 
 func (ctrl FileController) CreateNode(c *gin.Context) {
 	path := c.Param("path")
 	fmt.Println(path)
+
+	var json model.Blob
+	var err error
+	err = c.ShouldBindJSON(&json)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	switch json.Kind {
+	case BLOB:
+		err = ctrl.Srv.CreateFile(path, json.Data)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		break
+	case TREE:
+		err = ctrl.Srv.CreateDir(path)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err)
+			return
+		}
+		break
+	}
 	c.Status(http.StatusCreated)
 }
 
 func (ctrl FileController) DeleteNode(c *gin.Context) {
 	path := c.Param("path")
 	fmt.Println(path)
+
+	err := ctrl.Srv.DeleteNode(path)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
 	c.Status(http.StatusNoContent)
 }

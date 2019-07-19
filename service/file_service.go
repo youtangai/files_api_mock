@@ -38,8 +38,8 @@ type IFileService interface {
 	CreateDir(path string) error
 	ReadFile(path string) (model.Blob, error)
 	ReadDir(path string) (model.Tree, error)
-	DeleteFile(path string) error
-	DeleteDir(path string) error
+	DeleteNode(path string) error
+	IsDir(path string) (bool, error)
 }
 
 type FileService struct {}
@@ -144,20 +144,30 @@ func (srv FileService) ReadDir(path string) (model.Tree, error) {
 	}, nil
 }
 
-func (srv FileService) DeleteFile(path string) error {
-	targetPath := filepath.Join(wd, path)
-	err := os.Remove(targetPath)
-	if err != nil {
-		return fmt.Errorf("file service: err: failed to delete file: path: %s, err: %s¥n", targetPath, err)
-	}
-	return nil
-}
-
-func (srv FileService) DeleteDir(path string) error {
+func (srv FileService) DeleteNode(path string) error {
 	targetPath := filepath.Join(wd, path)
 	err := os.RemoveAll(targetPath)
 	if err != nil {
 		return fmt.Errorf("file service: err: failed to delete dir: path: %s, err: %s¥n", targetPath, err)
 	}
 	return nil
+}
+
+func (srv FileService) IsDir(path string) (bool, error) {
+	targetPath := filepath.Join(wd, path)
+	file, err := os.Open(targetPath)
+	if err != nil {
+		return false, fmt.Errorf("file service: err: failed to open path: %s, err: %s¥n", targetPath, err)
+	}
+
+	info, err := file.Stat()
+	if err != nil {
+		return false, fmt.Errorf("file service: err: failed to get file info: %s, err: %s¥n", targetPath, err)
+	}
+
+	if info.IsDir() {
+		return true, nil
+	}
+
+	return false, nil
 }
