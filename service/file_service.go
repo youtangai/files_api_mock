@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/youtangai/files_api_mock/config"
 	"github.com/youtangai/files_api_mock/model"
 	"io"
 	"io/ioutil"
@@ -11,16 +12,14 @@ import (
 	"path/filepath"
 )
 
-const (
-	targetDir = "../data"
-)
-
 var (
 	wd string
 )
 
 func init() {
 	log.Println("file service: info: start initializing")
+
+	targetDir := config.GetWD()
 
 	err := os.Chdir(targetDir)
 	if err != nil {
