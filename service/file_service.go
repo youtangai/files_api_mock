@@ -97,6 +97,10 @@ func (srv FileService) DeleteFile(path string) error {
 }
 
 func (srv FileService) DeleteDir(path string) error {
-	fmt.Println(path)
+	targetPath := filepath.Join(wd, path)
+	err := os.RemoveAll(targetPath)
+	if err != nil {
+		return fmt.Errorf("file service: err: failed to delete dir: path: %s, err: %s¥n", targetPath, err)
+	}
 	return nil
 }

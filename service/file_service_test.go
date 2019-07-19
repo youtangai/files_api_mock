@@ -31,3 +31,11 @@ func TestDeleteFile(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestDeleteDir(t *testing.T) {
+	srv := NewFileService()
+	err := srv.DeleteDir("dir1")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
