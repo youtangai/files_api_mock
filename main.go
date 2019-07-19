@@ -14,7 +14,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Fatal(router.Run())
+	log.Fatal(router.Run(":8082"))
 }
 
 func initCtrl() controller.IFileController {
