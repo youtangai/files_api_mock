@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/youtangai/files_api_mock/model"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -83,8 +84,36 @@ func (srv FileService) ReadFile(path string) (model.Blob, error) {
 }
 
 func (srv FileService) ReadDir(path string) (model.Tree, error) {
-	fmt.Println(path)
-	return model.Tree{}, nil
+	targetPath := filepath.Join(wd, path)
+	nodes, err := ioutil.ReadDir(targetPath)
+	if err != nil {
+		return model.Tree{}, fmt.Errorf("file service: err: failed to read dir: path: %s, err: %s¥n", targetPath, err)
+	}
+
+	// 長さがわかっているので，明示的に指定
+	items := make([]model.Node, len(nodes))
+
+	for index, node := range nodes {
+		// ディレクトリだったら Kind:Tree を追加
+		if node.IsDir() {
+			items[index] = model.Node{
+				Kind: "Tree",
+				Name: node.Name(),
+			}
+			continue
+		}
+		// ディレクトリでなければ Kind:Blob を追加
+		items[index] = model.Node{
+			Kind: "Blob",
+			Name: node.Name(),
+		}
+	}
+
+	return model.Tree{
+		Kind: "Tree",
+		Name: path,
+		Items: items,
+	}, nil
 }
 
 func (srv FileService) DeleteFile(path string) error {
