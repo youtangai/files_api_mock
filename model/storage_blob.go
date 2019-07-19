@@ -1,7 +1,7 @@
 package model
 
-type Blob struct {
+type StorageBlob struct {
 	Kind string `json:"kind"`
-	Name string `json:"name"`
+	Path string `json:"path"`
 	Data string `json:"data"`
 }

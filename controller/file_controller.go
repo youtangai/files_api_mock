@@ -60,7 +60,7 @@ func (ctrl FileController) CreateNode(c *gin.Context) {
 	path := c.Param("path")
 	fmt.Println(path)
 
-	var json model.Blob
+	var json model.StorageBlob
 	var err error
 	err = c.ShouldBindJSON(&json)
 	if err != nil {

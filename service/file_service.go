@@ -36,8 +36,8 @@ func init() {
 type IFileService interface {
 	CreateFile(path, content string) error
 	CreateDir(path string) error
-	ReadFile(path string) (model.Blob, error)
-	ReadDir(path string) (model.Tree, error)
+	ReadFile(path string) (model.StorageBlob, error)
+	ReadDir(path string) (model.StorageTree, error)
 	DeleteNode(path string) error
 	IsDir(path string) (bool, error)
 }
@@ -78,11 +78,11 @@ func (srv FileService) CreateDir(path string) error {
 	return nil
 }
 
-func (srv FileService) ReadFile(path string) (model.Blob, error) {
+func (srv FileService) ReadFile(path string) (model.StorageBlob, error) {
 	targetPath := filepath.Join(wd, path)
 	file, err := os.Open(targetPath)
 	if err != nil {
-		return model.Blob{}, fmt.Errorf("file service: err: failed to open file: path: %s, err: %s¥n", targetPath, err)
+		return model.StorageBlob{}, fmt.Errorf("file service: err: failed to open file: path: %s, err: %s¥n", targetPath, err)
 	}
 	defer file.Close()
 
@@ -96,7 +96,7 @@ func (srv FileService) ReadFile(path string) (model.Blob, error) {
 			break
 		}
 		if err != nil {
-			return model.Blob{}, fmt.Errorf("file service: err: failed to read content: path: %s, err: %s¥n", targetPath, err)
+			return model.StorageBlob{}, fmt.Errorf("file service: err: failed to read content: path: %s, err: %s¥n", targetPath, err)
 		}
 		content += string(data)
 	}
@@ -104,42 +104,42 @@ func (srv FileService) ReadFile(path string) (model.Blob, error) {
 	//base64でエンコード
 	encoded := base64.StdEncoding.EncodeToString([]byte(content))
 
-	return model.Blob{
+	return model.StorageBlob{
 		Kind: "Blob",
-		Name: path,
+		Path: path,
 		Data: encoded,
 	}, nil
 }
 
-func (srv FileService) ReadDir(path string) (model.Tree, error) {
+func (srv FileService) ReadDir(path string) (model.StorageTree, error) {
 	targetPath := filepath.Join(wd, path)
 	nodes, err := ioutil.ReadDir(targetPath)
 	if err != nil {
-		return model.Tree{}, fmt.Errorf("file service: err: failed to read dir: path: %s, err: %s¥n", targetPath, err)
+		return model.StorageTree{}, fmt.Errorf("file service: err: failed to read dir: path: %s, err: %s¥n", targetPath, err)
 	}
 
 	// 長さがわかっているので，明示的に指定
-	items := make([]model.Node, len(nodes))
+	items := make([]model.StorageObject, len(nodes))
 
 	for index, node := range nodes {
 		// ディレクトリだったら Kind:Tree を追加
 		if node.IsDir() {
-			items[index] = model.Node{
+			items[index] = model.StorageObject{
 				Kind: "Tree",
-				Name: node.Name(),
+				Path: node.Name(),
 			}
 			continue
 		}
 		// ディレクトリでなければ Kind:Blob を追加
-		items[index] = model.Node{
+		items[index] = model.StorageObject{
 			Kind: "Blob",
-			Name: node.Name(),
+			Path: node.Name(),
 		}
 	}
 
-	return model.Tree{
+	return model.StorageTree{
 		Kind: "Tree",
-		Name: path,
+		Path: path,
 		Items: items,
 	}, nil
 }

@@ -2,13 +2,13 @@ package model
 
 const (
 	// BLOB is type of file
-	BLOB = "blob"
+	BLOB = "storage_blob"
 	// TREE is type of directory
-	TREE = "Tree"
+	TREE = "storage_tree"
 )
 
-type Node struct {
+type StorageObject struct {
 	Kind string `json:"kind"`
-	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
