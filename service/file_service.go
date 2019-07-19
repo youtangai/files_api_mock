@@ -126,14 +126,14 @@ func (srv FileService) ReadDir(path string) (model.StorageTree, error) {
 		if node.IsDir() {
 			items[index] = model.StorageObject{
 				Kind: "Tree",
-				Path: node.Name(),
+				Path: filepath.Join(path, node.Name()),
 			}
 			continue
 		}
 		// ディレクトリでなければ Kind:Blob を追加
 		items[index] = model.StorageObject{
 			Kind: "Blob",
-			Path: node.Name(),
+			Path: filepath.Join(path,node.Name()),
 		}
 	}
 

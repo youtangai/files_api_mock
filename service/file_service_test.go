@@ -34,12 +34,8 @@ func TestFileService_DeleteNode(t *testing.T) {
 
 func TestFileService_ReadDir(t *testing.T) {
 	srv := NewFileService()
-	tree, err := srv.ReadDir("")
+	tree, err := srv.ReadDir("dirA/dirB")
 	if err != nil {
-		t.Fatal(err)
-	}
-
-	if len(tree.Items) != 3 {
 		t.Fatal(err)
 	}
 
