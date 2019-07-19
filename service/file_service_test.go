@@ -15,3 +15,19 @@ func TestCreateFile(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestCreateDir(t *testing.T) {
+	srv := NewFileService()
+	err := srv.CreateDir("dir1")
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDeleteFile(t *testing.T) {
+	srv := NewFileService()
+	err := srv.DeleteFile("a.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+}

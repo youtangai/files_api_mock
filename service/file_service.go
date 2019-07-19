@@ -67,8 +67,13 @@ func (srv FileService) CreateFile(path, content string) error {
 	return nil
 }
 
+// CreateDir is Create new dir in the specific locale.
 func (srv FileService) CreateDir(path string) error {
-	fmt.Println(path)
+	targetPath := filepath.Join(wd, path)
+	err := os.Mkdir(targetPath, 0755)
+	if err != nil {
+		return fmt.Errorf("file service: err: failed to create dir: path: %s, err: %s¥n", targetPath, err)
+	}
 	return nil
 }
 
@@ -83,7 +88,11 @@ func (srv FileService) ReadDir(path string) (model.Tree, error) {
 }
 
 func (srv FileService) DeleteFile(path string) error {
-	fmt.Println(path)
+	targetPath := filepath.Join(wd, path)
+	err := os.Remove(targetPath)
+	if err != nil {
+		return fmt.Errorf("file service: err: failed to delete file: path: %s, err: %s¥n", targetPath, err)
+	}
 	return nil
 }
 
