@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/youtangai/files_api_mock/model"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -79,8 +80,36 @@ func (srv FileService) CreateDir(path string) error {
 }
 
 func (srv FileService) ReadFile(path string) (model.Blob, error) {
-	fmt.Println(path)
-	return model.Blob{}, nil
+	targetPath := filepath.Join(wd, path)
+	file, err := os.Open(targetPath)
+	if err != nil {
+		return model.Blob{}, fmt.Errorf("file service: err: failed to open file: path: %s, err: %s¥n", targetPath, err)
+	}
+	defer file.Close()
+
+	// len, cap is 1MB
+	data := make([]byte, 1)
+	content := ""
+	for {
+		_, err := file.Read(data)
+		// EOFがerrに入ったら，すべて内容を読み込んだということで終了
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return model.Blob{}, fmt.Errorf("file service: err: failed to read content: path: %s, err: %s¥n", targetPath, err)
+		}
+		content += string(data)
+	}
+
+	//base64でエンコード
+	encoded := base64.StdEncoding.EncodeToString([]byte(content))
+
+	return model.Blob{
+		Kind: "Blob",
+		Name: path,
+		Data: encoded,
+	}, nil
 }
 
 func (srv FileService) ReadDir(path string) (model.Tree, error) {

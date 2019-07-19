@@ -53,3 +53,17 @@ func TestFileService_ReadDir(t *testing.T) {
 
 	t.Logf("%v¥n",tree)
 }
+
+func TestFileService_ReadFile(t *testing.T) {
+	srv :=NewFileService()
+	blob, err := srv.ReadFile("a.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(blob.Data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("%s¥n", decoded)
+}
