@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/gommon/log"
 	"github.com/youtangai/files_api_mock/controller"
+	"github.com/youtangai/files_api_mock/service"
 	"net/http"
 )
 
@@ -13,11 +14,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Fatal(router.Run())
+	log.Fatal(router.Run(":8082"))
+}
+
+func initCtrl() controller.IFileController {
+	return controller.NewFileController(service.NewFileService())
 }
 
 func initRouter() (*gin.Engine, error) {
-	fileCtrl := controller.NewFileController()
+	fileCtrl := initCtrl()
 
 	router := gin.Default()
 
